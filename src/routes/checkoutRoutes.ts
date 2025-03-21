@@ -9,7 +9,7 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
   const { id, name, quantity, category } = req.body;
-  if (!id || !name || !quantity || !category) {
+  if (!id || !name || !quantity) {
     return res.status(400).json({ error: "All fields are required" });
   }
   cart.push({ id, name, quantity, category });
