@@ -5,9 +5,22 @@ import { connectDB } from "./config/db";
 import checkoutRoutes from "./routes/checkoutRoutes";
 
 dotenv.config();
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || "").split(",").map((origin) => origin.trim());
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed from this origin"));
+      }
+    },
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 connectDB();
