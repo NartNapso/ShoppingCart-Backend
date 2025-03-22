@@ -13,15 +13,15 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || "").split(",").map((origi
 const PORT = process.env.PORT || 5000;
 const app = express();
 
-app.options("*", cors());
-
 app.use(
   cors({
     origin: (origin, callback) => {
+      logger.info(`Origin: ${origin}`);
       if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
         callback(null, true);
       } else {
-        callback(new Error(`CORS not allowed from this origin: ${origin}`));
+        logger.warn(`Blocked CORS from origin: ${origin}`);
+        callback(new Error("CORS not allowed from this origin"));
       }
     },
     credentials: true,
