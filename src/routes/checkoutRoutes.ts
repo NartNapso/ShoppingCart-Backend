@@ -1,30 +1,26 @@
 import express from "express";
 const router = express.Router();
 
-let cart: { id: number; name: string; quantity: number; category: string }[] = [];
-
-router.get("/", (req, res) => {
-  res.json(cart);
-});
-
 router.post("/", (req, res) => {
-  const { id, name, quantity, category } = req.body;
-  if (!id || !name || !quantity) {
+  const { fullName, address, email, cart } = req.body;
+
+  if (!fullName || !address || !email || !cart || typeof cart !== "object") {
     return res.status(400).json({ error: "All fields are required" });
   }
-  cart.push({ id, name, quantity, category });
-  res.json(cart);
-});
 
-router.delete("/:id", (req, res) => {
-  const { id } = req.params;
-  cart = cart.filter((item) => item.id !== parseInt(id));
-  res.json(cart);
-});
+  let extractedItems: { id: number; name: string; quantity: number; category?: string }[] = [];
 
-router.delete("/", (req, res) => {
-  cart = [];
-  res.json({ message: "Cart cleared" });
+  Object.entries(cart).forEach(([category, items]: [string, any]) => {
+    if (Array.isArray(items)) {
+      extractedItems = [...extractedItems, ...items.map(item => ({ ...item, category }))];
+    }
+  });
+
+  if (extractedItems.length === 0) {
+    return res.status(400).json({ error: "Cart cannot be empty" });
+  }
+
+  res.json({ message: "Checkout successful", cart: extractedItems });
 });
 
 export default router;

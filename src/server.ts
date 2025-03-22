@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 connectDB();
-
+console.log("✅ Connected to MongoDB");
 app.use("/api/checkout", checkoutRoutes);
 
 const PORT = process.env.PORT || 5000;
